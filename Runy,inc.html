@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>【警告】システムメッセージ</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; padding-top: 100px; }
+        .window { border: 2px solid #0f0; display: inline-block; padding: 40px; background: #111; box-shadow: 0 0 20px #0f0; }
+        .danger { color: #f00; font-size: 30px; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } }
+        .btn { background: #333; color: #0f0; border: 1px solid #0f0; padding: 10px 20px; cursor: pointer; margin-top: 20px; }
+        #ban-msg { display: none; color: #f00; font-size: 50px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="window">
+        <p class="danger">⚠️ SECURITY BREACH ⚠️</p>
+        <p>あなたのアクセスログを記録しました。</p>
+        <p>IP: 192.168.XXX.XXX / Device ID: <span id="device-id">Checking...</span></p>
+        <p style="color: white;">登録解除料: **$10,000**</p>
+        <button class="btn" onclick="banExecution()">解約してデバイス情報を削除する</button>
+    </div>
+</div>
+
+<div id="ban-msg">ACCESS DENIED<br><span style="font-size: 20px;">この端末からのアクセスは恒久的に遮断されました。</span></div>
+
+<script>
+    // ブラウザ固有の「指紋」を作成する関数
+    function getFingerprint() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.textBaseline = "top";
+        ctx.font = "14px 'Arial'";
+        ctx.fillText("scam_test", 2, 2);
+        return btoa(canvas.toDataURL()); // 描画結果を文字列化
+    }
+
+    const fingerprint = getFingerprint();
+    document.getElementById('device-id').innerText = fingerprint.substring(0, 16);
+
+    // ページ読み込み時にチェック
+    if (localStorage.getItem('banned_' + fingerprint)) {
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('ban-msg').style.display = 'block';
+        document.body.style.background = "#300";
+    }
+
+    function banExecution() {
+        if(confirm("本当に解約しますか？この操作は取り消せません。")) {
+            // 指紋をキーにして禁止フラグを保存
+            localStorage.setItem('banned_' + fingerprint, 'true');
+            alert("情報を送信しました。サイトを自爆させます。");
+            location.reload();
+        }
+    }
+</script>
+</body>
+</html>
